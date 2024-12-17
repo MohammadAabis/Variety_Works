@@ -161,7 +161,8 @@
 .label {
   color: rgba(255, 255, 255, 0.8);
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: bold;
   letter-spacing: 2px;
   padding: 0px 5px;
   text-align: start;
@@ -201,4 +202,24 @@
 .login-button:hover {
   background: rgb(25, 12, 188);
   border-radius: 40px;
+}
+
+
+.remember-area {
+  display: flex;
+  align-items: center;
+}
+
+.signin-checkbox {
+  margin-right: 10px;
+}
+
+.remember-me {
+  line-height: 1.5; 
+}
+
+.forget-pass {
+  text-decoration: none;
+  color: #007BFF;
+  margin-left: 120px;
 }

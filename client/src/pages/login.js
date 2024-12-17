@@ -63,9 +63,11 @@ const Login = () => {
                 <label className="label">Password</label> 
                 <input type="password" name="password" value={formData.password} onChange={handleChange} className="input" placeholder="Enter your password" required /> 
             
-                <div><input type='checkbox' name="" />
-                <p className=''>Remember me</p>
-                <a href="#" >Forgot Password</a></div>
+                <div className='remember-area'>
+                    <input type='checkbox' name="" className='signin-checkbox'/>
+                    <p className='remember-me'>Remember me</p>
+                    <a href="#" className='forget-pass'>Forgot Password</a>
+                </div>
                 
                 <button onClick={handleSubmit} type="submit" className="login-button" > Login </button> 
                 {message && 
