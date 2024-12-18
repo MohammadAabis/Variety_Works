@@ -126,9 +126,9 @@
     rgba(229, 166, 231, 0.8184523809523809) 90%
   );
   color: white;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.75);
-  background-size: cover;
-  background-position: center;
+  /* box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.75); */
+  /* background-size: cover; */
+  /* background-position: center; */
   overflow: hidden;
 }
 
@@ -207,6 +207,7 @@
 
 .remember-area {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
 }
 
@@ -218,8 +219,36 @@
   line-height: 1.5; 
 }
 
-.forget-pass {
+.forget-pass{
+  display: flex;
+  justify-content: center;
+}
+
+.forget-pass a{
   text-decoration: none;
   color: #007BFF;
-  margin-left: 120px;
+}
+
+/* Media query for larger screens */ 
+@media (min-width: 768px) { 
+  .login-content { 
+    width: auto; 
+  } 
+  .login-button { 
+    width: 200px; 
+  } 
+} 
+
+/* Media query for smaller screens  */
+@media (max-width: 767px) { 
+  .login-content {
+    width: auto;
+  } 
+  .remember-area { 
+    flex-direction: row; 
+    align-items: center; 
+  } 
+  .forget-pass { 
+    margin-left: 0; 
+  } 
 }

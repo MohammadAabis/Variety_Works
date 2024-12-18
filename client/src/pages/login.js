@@ -63,13 +63,15 @@ const Login = () => {
                 <label className="label">Password</label> 
                 <input type="password" name="password" value={formData.password} onChange={handleChange} className="input" placeholder="Enter your password" required /> 
             
-                <div className='remember-area'>
+                <div className='remember-area col-12 col-md-10'>
                     <input type='checkbox' name="" className='signin-checkbox'/>
-                    <p className='remember-me'>Remember me</p>
-                    <a href="#" className='forget-pass'>Forgot Password</a>
+                    <p className='remember-me'>Remember me</p>                    
                 </div>
                 
                 <button onClick={handleSubmit} type="submit" className="login-button" > Login </button> 
+                <div className='forget-pass'>
+                    <a href="#">Forgot Password?</a>
+                </div>
                 {message && 
                 <div> 
                     <p className='alert alert-info mt-3'>{message}</p>
