@@ -1,16 +1,12 @@
-import React from 'react'
-const Index =() =>{
-
-    fetch("https://node-app.asterisksolutions.com/api/holidays/")
-      .then((res) => res.json())
-      .then((data) => {console.log(data)});
-    return(
-        <div>
-            <h1>Welcome to our website!</h1>
-            <p>This is the main page.</p>
-        </div>
-    )
-}
+import React from "react";
+const Index = () => {
+  return (
+    <div>
+      <h1>Welcome to our website!</h1>
+      <p>This is the main page.</p>
+    </div>
+  );
+};
 
 export default Index;
 
