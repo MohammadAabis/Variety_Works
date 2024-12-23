@@ -54,6 +54,11 @@ app.get("/", (request, response) => {
 });
 
 
+// USER ROUTES
+const userRoute = require("./routers/Users");
+app.use("/api/users", userRoute);
+
+
 app.listen(port, async(req, res) => {
   console.log(`App running on port ${port}.`);
 }); 

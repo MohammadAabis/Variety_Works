@@ -1,10 +1,15 @@
 import React from "react";
 const Index = () => {
   return (
-    <div>
-      <h1>Welcome to our website!</h1>
-      <p>This is the main page.</p>
-    </div>
+    <>
+        <div>
+            <h1>Welcome to our website!</h1>
+            <p>This is the main page.</p>
+        </div>
+
+        
+    </>
+    
   );
 };
 

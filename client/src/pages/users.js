@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Signup } from '../API/Users';
 
-const SignUp = () => {
+const Users = () => {
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -34,12 +35,12 @@ const SignUp = () => {
                 }, 3000);
             }  
             else{
-                // Signup(formData).then((res) =>{
-                //     setMessage(res.data.msg);
-                //     setTimeout(function() {
-                //         setMessage('')
-                //     }, 3000);
-                // })
+                Signup(formData).then((res) =>{
+                    setMessage(res.data.msg);
+                    setTimeout(function() {
+                        setMessage('')
+                    }, 3000);
+                })
             }               
             
         }
@@ -88,4 +89,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default Users;
