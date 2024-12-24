@@ -1,8 +1,8 @@
 import './App.css';
 import Index from './pages';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Users from './pages/users';
-import Login from './pages/login';
+import Users from './pages/Users';
+import Login from './pages/Login';
 
 
 function App() {

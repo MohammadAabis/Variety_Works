@@ -17,7 +17,7 @@
     flex-direction: row;
     align-items: center;
   }
-  .forget-pass {
+  .not-member {
     margin-left: 0;
   }
 }
@@ -40,7 +40,7 @@
   padding: 40px;
   width: auto;
   height: 100%;
-  backdrop-filter: brightness(75%);
+  backdrop-filter: brightness(90%);
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -210,6 +210,7 @@
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  margin-left: 5px;
 }
 
 .signin-checkbox {
@@ -217,19 +218,39 @@
 }
 
 .remember-me {
-  line-height: 1.5;
+  line-height: 0;
+  padding-top: 13px;
 }
 
-.forget-pass {
+.not-member {
   display: flex;
   justify-content: center;
 }
 
-.forget-pass a {
-  text-decoration: none;
-  color: #007bff;
+.not-member p {
+  color: #fff;
+  padding-right: 10px;
 }
 
-.forget-pass a:hover {
-  color: white;
+.not-member a{
+  text-decoration: none;
 }
+
+.not-member a:hover {
+  color: rgb(25, 12, 188);
+}
+
+
+/* Styles for the message container */
+.message-container {
+  height: 30px;
+}
+
+/* Styles for the message text */
+.message {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  color: #7de6c1;
+}
+

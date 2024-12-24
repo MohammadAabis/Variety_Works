@@ -10,9 +10,4 @@ const Signup = async (dataArg) => {
   return respData;
 };
 
-// const Signin = async (dataArg) => {
-//   const respData = await client.post("/login", dataArg);
-//   return respData;
-// };
-
 export { Signup };

@@ -1,4 +1,4 @@
-import React, { useState, useNavigate, useDispatch, useSelector } from 'react';
+import React, { useState } from 'react';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -68,15 +68,21 @@ const Login = () => {
                     <p className='remember-me'>Remember me</p>                    
                 </div>
                 
-                <button onClick={handleSubmit} type="submit" className="login-button" > Login </button> 
-                <div className='forget-pass'>
-                    <a href="#">Forgot Password?</a>
+                <button onClick={handleSubmit} type="submit" className="login-button" > Login </button>
+
+                <div className="message-container">
+                    {message && (          
+                        <p className="message">{message}</p>          
+                    )}
                 </div>
-                {message && 
-                <div> 
-                    <p className='alert alert-info mt-3'>{message}</p>
+
+                <div className='not-member'>
+                    <p>Not a member?</p>
+                    <a href="/signup">Sign Up</a>
                 </div>
-                } 
+
+
+                
             </form> 
         </div>    
     );

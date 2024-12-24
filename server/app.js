@@ -2,7 +2,13 @@ const express = require("express");
 const app = express();
 var cors = require("cors");
 
+// Import the connection function
+const connectDB = require('./db-config'); 
+
 const port = 7000;
+
+// Connect to MongoDB
+connectDB();
 
 // Node.js middleware for parsing incoming request bodies
 var bodyParser = require("body-parser");

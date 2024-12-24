@@ -12,6 +12,14 @@ const createUser = async (req, res) => {
       });
     }
 
+    const phoneExists = await User.findOne({ phone });
+    if (phoneExists) {
+      return res.status(200).json({
+        status: 200,
+        msg: "Phone is already registered!",
+      });
+    }
+
     const newUser = new User({
       first_name,
       last_name,
