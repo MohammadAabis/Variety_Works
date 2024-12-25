@@ -142,7 +142,7 @@ const Users = () => {
 
         <div className="already-have-account">
           <p>
-            Already have an account? <a href="/login">Signin</a>
+            Already have an account? <a href="/login">Sign in</a>
           </p>
         </div>
       </form>
