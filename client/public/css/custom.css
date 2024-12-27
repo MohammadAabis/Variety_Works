@@ -89,9 +89,9 @@
   color: rgb(255, 255, 255);
 }
 
-/* **************************************************** */
+/* ************************End Signup Styles**************************** */
 
-/* *********************Login styles******************* */
+/* *********************Start Login styles******************* */
 
 .login {
   position: absolute;
@@ -181,13 +181,6 @@
   font-size: 12px;
   text-transform: uppercase;
   cursor: pointer;
-  /* align-content: center; */
-  /* align-items: center; */
-  /* align-self: center; */
-  /* position: relative; */
-  /* top: 50%; */
-  /* left: 50%; */
-  /* transform: translate(-50%, 0%); */
 }
 
 .login-button:hover {
@@ -244,10 +237,12 @@
   color: #7de6c1;
 }
 
+/* *********************End Login styles******************* */
 
 
 
 
+/* ****************************Media Query************************** */
 
 /* Media query for smaller screens  */
 

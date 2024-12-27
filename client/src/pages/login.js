@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Signin } from '../API/Users';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -31,23 +32,28 @@ const Login = () => {
             return;
         }
               
-    // Signin(formData).then((resp) =>{
-    //     if(resp.data.status === 200){                
-    //         // dispatch(loginSuccess(resp.data.data.token, resp.data.data.user));
-    //         // navigate('/dashboard');
-    //         try { 
-    //             const user = { email: formData.email, password: formData.password }; 
-    //             dispatch(loginSuccess(user)); 
-    //             navigate('/welcome');
-    //         } catch (err) { dispatch(loginFailure(error))}
-    //     }
-    //     else{
-    //         setMessage("Invalid login credentials")
-    //         setTimeout(function(){
-    //             setMessage('')
-    //         },3000)
-    //     }
-    //})
+    Signin(formData).then((resp) =>{console.log(resp.data,"success")
+        if(resp.data.status === 200){                
+            // dispatch(loginSuccess(resp.data.data.token, resp.data.data.user));
+            // navigate('/dashboard');
+            // try { 
+            //     const user = { email: formData.email, password: formData.password }; 
+            //     dispatch(loginSuccess(user)); 
+            //     navigate('/welcome');
+            // } catch (err) { dispatch(loginFailure(error))}
+            // }
+            setMessage("Login successful!")
+            setTimeout(function(){
+                setMessage("")
+            },3000)
+        }
+        else{
+            setMessage("Invalid login credentials")
+            setTimeout(function(){
+                setMessage('')
+            },3000)
+        }
+    })
 
     };
 

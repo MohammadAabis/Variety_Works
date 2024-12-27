@@ -1,4 +1,4 @@
-const User = require('../models/Users');
+const User = require("../models/Users");
 
 const createUser = async (req, res) => {
   const { first_name, last_name, email, address, phone, password } = req.body;
@@ -26,7 +26,7 @@ const createUser = async (req, res) => {
       email,
       address,
       phone,
-      password
+      password,
     });
 
     await newUser.save();
@@ -43,5 +43,38 @@ const createUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser };
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  console.log(req.body);
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({
+        status: 400,
+        msg: "User not found!",
+      });
+    }
+    // Assuming passwords are hashed; compare the password
+    // const isMatch = await bcrypt.compare(password, user.password);
+    if (user.password != password) {
+      return res.status(400).json({
+        status: 400,
+        msg: "Invalid credentials!",
+      });
+    }
+    // If credentials are correct
+    res.status(200).json({
+      status: 200,
+      msg: "Login successful!",
+      user,
+    });
+  } catch (e) {
+    console.error(e.message);
+    res.status(500).json({
+      status: 500,
+      msg: "An error occurred during login.",
+    });
+  }
+};
 
+module.exports = { createUser, loginUser };

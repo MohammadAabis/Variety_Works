@@ -10,4 +10,9 @@ const Signup = async (dataArg) => {
   return respData;
 };
 
-export { Signup };
+const Signin = async (dataArg) => { 
+  const respData = await client.post("/signin", dataArg); 
+  return respData;
+}
+
+export { Signup, Signin };
