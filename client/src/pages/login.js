@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Signin } from '../API/Users';
-
+import { useDispatch, useSelector } from 'react-redux'; 
+import { loginSuccess, loginFailure } from '../store/reducer/authReducer'; 
+import { useNavigate } from 'react-router-dom';
 const Login = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
     const [message, setMessage] = useState('');
-    // const dispatch = useDispatch(); 
-    // const navigate = useNavigate(); 
-    // const error = useSelector((state) => state.auth.error);
+    const dispatch = useDispatch(); 
+    const navigate = useNavigate(); 
+    const error = useSelector((state) => state.auth.error);
 
 
     const handleChange = (e) => {
@@ -32,20 +34,15 @@ const Login = () => {
             return;
         }
               
-    Signin(formData).then((resp) =>{console.log(resp.data,"success")
+    Signin(formData).then((resp) =>{
         if(resp.data.status === 200){                
             // dispatch(loginSuccess(resp.data.data.token, resp.data.data.user));
             // navigate('/dashboard');
-            // try { 
-            //     const user = { email: formData.email, password: formData.password }; 
-            //     dispatch(loginSuccess(user)); 
-            //     navigate('/welcome');
-            // } catch (err) { dispatch(loginFailure(error))}
-            // }
-            setMessage("Login successful!")
-            setTimeout(function(){
-                setMessage("")
-            },3000)
+            try { 
+                const user = { email: formData.email, password: formData.password }; 
+                dispatch(loginSuccess(user)); 
+                navigate('/welcome');
+            } catch (err) { dispatch(loginFailure(error))}
         }
         else{
             setMessage("Invalid login credentials")
