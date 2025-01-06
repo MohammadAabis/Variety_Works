@@ -41,7 +41,7 @@ const Login = () => {
             try { 
                 const user = { email: formData.email, password: formData.password }; 
                 dispatch(loginSuccess(user)); 
-                navigate('/welcome');
+                navigate('/index');
             } catch (err) { dispatch(loginFailure(error))}
         }
         else{
