@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import {Provider} from 'react-redux';
 import store, {persistor} from './store';
 import { logout } from './store/reducer/authReducer';
+import { PersistGate } from 'redux-persist/lib/integration/react';
 
 
 // Function to check for session expiration on app load
