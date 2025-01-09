@@ -6,7 +6,7 @@ const Image3d = () => {
       <div className="container-fluid">
         <div className="images-container">
           <span style={{ "--i": 1 }}>
-            <img className="images" src="./1.jpeg" alt="img1" />
+            <img className="images" src="../1.jpeg" alt="img1" />
           </span>
           <span style={{ "--i": 2 }}>
             <img className="images" src="./2.jpg" alt="img2" />
