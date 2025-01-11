@@ -81,11 +81,11 @@
   border-radius: 40px;
 }
 
-.already-have-account  p a{
+.already-have-account p a {
   text-decoration: none;
 }
 
-.already-have-account  p a:hover{
+.already-have-account p a:hover {
   color: rgb(255, 255, 255);
 }
 
@@ -215,14 +215,13 @@
   padding-right: 10px;
 }
 
-.not-member a{
+.not-member a {
   text-decoration: none;
 }
 
 .not-member a:hover {
   color: rgb(25, 12, 188);
 }
-
 
 /* Styles for the message container */
 .message-container {
@@ -239,67 +238,62 @@
 
 /* *********************End Login styles******************* */
 
-
-
-
 /* ****************************Media Query************************** */
 
 /* Media query for smaller screens  */
 
-/* Small Devices (tablets, 576px to 767px) */ 
-@media (max-width: 767px) { 
-  .login-content { 
-    width: 80%; 
-  } 
-  .login-button{
-    width: 150px;
-  }
-  .input{
+/* Small Devices (tablets, 576px to 767px) */
+@media (max-width: 767px) {
+  .login-content {
     width: 80%;
   }
-  
-} 
-
-/* Medium Devices (tablets, 768px to 991px) */ 
-@media (min-width: 767px) and (max-width: 991px) { 
-  .login-content { 
-    width: 30%; 
-  }
-  .login-button{
+  .login-button {
     width: 150px;
   }
-  .input{
+  .input {
+    width: 80%;
+  }
+}
+
+/* Medium Devices (tablets, 768px to 991px) */
+@media (min-width: 767px) and (max-width: 991px) {
+  .login-content {
+    width: 30%;
+  }
+  .login-button {
+    width: 150px;
+  }
+  .input {
     width: 100%;
-  } 
-} 
+  }
+}
 
-/* Large Devices (desktops, 992px to 1199px) */ 
-@media (min-width: 992px) and (max-width: 1199px) { 
-  .login-content { 
-    width: 30%; 
-  } 
-} 
-
+/* Large Devices (desktops, 992px to 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .login-content {
+    width: 30%;
+  }
+}
 
 /* ********************************************************* */
 
 /* ***************** Start 3D Images*************************** */
 
 /* 3D Images */
-/* .body{
+.container-fluid{
   background-color: #a1c4bb;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-} */
+}
 
-.images{
+.images {
   height: 350px;
   width: 200px;
 }
 
-.images-container{
+.images-container {
   height: 350px;
   width: 200px;
   position: relative;
@@ -309,30 +303,30 @@
   cursor: pointer;
 }
 
-.images-container span{
+.images-container span {
   position: absolute;
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
   transform: rotateY(calc(var(--i) * 45deg)) translateZ(500px);
-  -webkit-box-reflect: below 2.5px linear-gradient(transparent, rgba(0, 0, 0, 0.2));
+  -webkit-box-reflect: below 2.5px
+    linear-gradient(transparent, rgba(0, 0, 0, 0.2));
 }
 
-.images-container span .images{
+.images-container span .images {
   position: absolute;
   border-radius: 10px;
   border: 6px ridge #ccc;
 }
 
-@keyframes gallery{
-  0%{
+@keyframes gallery {
+  0% {
     transform: perspective(1000px) rotateY(0deg);
   }
 
-  100%{
+  100% {
     transform: perspective(1000px) rotateY(360deg);
   }
-  
 }
 
 /* ***************** End 3D Images*************************** */
