@@ -1,8 +1,11 @@
 import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../store/reducer/authReducer";
 const Index = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
 
     useEffect(() => {
@@ -11,12 +14,21 @@ const Index = () => {
         }
     });
 
+    const handleLogout = () =>{
+        dispatch(logout());
+        navigate('/login');
+    }
+
   return (
     <>
         <div>
             <h1>Welcome to our website!</h1>
             <p>This is the main page.</p>
         </div>
+        <br />
+        <br />
+
+        <button onClick={handleLogout}>Logout</button>
 
         
     </>
