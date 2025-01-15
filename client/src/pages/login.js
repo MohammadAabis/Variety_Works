@@ -23,7 +23,7 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Form data:', formData);
+        console.log('Form datas:', formData);
 
         if(!formData.email || !formData.password){
             setMessage("Please fill required fields")
@@ -33,23 +33,23 @@ const Login = () => {
             return;
         }
               
-    Signin(formData).then((resp) =>{
-        if(resp.data.status === 200){                
-            // dispatch(loginSuccess(resp.data.data.token, resp.data.data.user));
-            // navigate('/dashboard');
-            try { 
-                const user = { email: formData.email, password: formData.password }; 
-                dispatch(loginSuccess(user)); 
-                navigate('/');
-            } catch (err) { dispatch(loginFailure(error))}
-        }
-        else{
-            setMessage("Invalid login credentials")
-            setTimeout(function(){
-                setMessage('')
-            },3000)
-        }
-    })
+        Signin(formData).then((resp) =>{
+            if(resp.data.status === 200){                
+                // dispatch(loginSuccess(resp.data.data.token, resp.data.data.user));
+                // navigate('/dashboard');
+                try { 
+                    const user = { email: formData.email, password: formData.password }; 
+                    dispatch(loginSuccess(user)); 
+                    navigate('/');
+                } catch (err) { dispatch(loginFailure(error))}
+            }
+            else{
+                setMessage(resp.data.msg)
+                setTimeout(function(){
+                    setMessage('')
+                },3000)
+            }
+        })
 
     };
 

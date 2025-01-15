@@ -45,32 +45,34 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
+
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({
+      return res.json({
         status: 400,
         msg: "User not found!",
       });
     }
-    // Assuming passwords are hashed; compare the password
-    // const isMatch = await bcrypt.compare(password, user.password);
-    if (user.password != password) {
-      return res.status(400).json({
-        status: 400,
-        msg: "Invalid credentials!",
-      });
-    }
-    // If credentials are correct
-    res.status(200).json({
-      status: 200,
-      msg: "Login successful!",
-      user,
-    });
+    else{
+      if (user.password != password) {
+        return res.json({
+          status: 400,
+          msg: "Invalid credentials!",
+        });
+      }
+      else{
+        // If credentials are correct
+        return res.json({
+          status: 200,
+          msg: "Login successful!",
+          user,  
+        })
+      }
+    }  
+    
   } catch (e) {
-    console.error(e.message);
-    res.status(500).json({
+    res.json({
       status: 500,
       msg: "An error occurred during login.",
     });
