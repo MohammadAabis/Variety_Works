@@ -23,7 +23,7 @@ const Index = () => {
     <>
         <div>
             <h1>Welcome to our website!</h1>
-            <p>This is the main page.</p>
+            <p>This is our main page.</p>
         </div>
         <br />
         <br />
