@@ -15,4 +15,18 @@ const Signin = async (dataArg) => {
   return respData;
 }
 
-export { Signup, Signin };
+const AddDynamicData = async (dataArg) => { 
+  const respData = await client.post("/form", dataArg); 
+  return respData;
+}
+const GetFormData = async (dataArg) => { 
+  const respData = await client.post("/get-form-data", dataArg);
+  return respData;
+}
+const GetFormCategory = async (category) => {
+  const respData = await client.get(`/form/${encodeURIComponent(category)}`);
+  return respData.data;
+};
+
+
+export { Signup, Signin, AddDynamicData, GetFormData, GetFormCategory };

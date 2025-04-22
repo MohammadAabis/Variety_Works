@@ -64,6 +64,10 @@ app.get("/", (request, response) => {
 const userRoute = require("./routers/Users");
 app.use("/api/users", userRoute);
 
+// Form ROUTES
+const formRoute = require("./routers/DynamicForm");
+app.use("/api/users", formRoute);
+
 
 app.listen(port, async(req, res) => {
   console.log(`App running on port ${port}.`);
