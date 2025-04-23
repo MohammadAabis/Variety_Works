@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AddDynamicData } from "../API/Users";
 import { generateFieldName } from "../utils";
+// import { useLocation } from "react-router-dom";
 
 const fieldTypes = ["text", "textarea", "dropdown", "checkbox"];
 
@@ -14,6 +15,17 @@ const DynamicForm = () => {
     "Finance",
     "Employee Details",
   ];
+
+//   const location = useLocation();
+//   const formToEdit = location.state?.formToEdit;
+
+// useEffect(() => {
+//   if (formToEdit) {
+//     setCategory(formToEdit.category);
+//     setFields(formToEdit.fields);
+//     // setFormId(formToEdit._id); // useRef or state to track this
+//   }
+// }, [formToEdit]);
 
   const addField = () => {
     const newField = {
@@ -62,6 +74,23 @@ const DynamicForm = () => {
       return;
     }
 
+    // Custom validation
+    for (let i = 0; i < fields.length; i++) {
+      const field = fields[i];
+
+      if (!field.label || field.label.trim() === "") {
+        alert(`Field ${i + 1} is missing a label.`);
+        return;
+      }
+
+      if (["dropdown", "checkbox"].includes(field.type)) {
+        if (!field.options || field.options.length === 0) {
+          alert(`Field "${field.label}" must have at least one option.`);
+          return;
+        }
+      }
+    }
+
     const formData = {
       category,
       fields,
@@ -75,6 +104,12 @@ const DynamicForm = () => {
     } catch (err) {
       console.error("Failed to save form:", err);
     }
+  };
+
+  const handleRemoveField = (index) => {
+    const updatedFields = [...fields];
+    updatedFields.splice(index, 1);
+    setFields(updatedFields);
   };
 
   return (
@@ -149,6 +184,13 @@ const DynamicForm = () => {
             />
             Required
           </label>
+          <br />
+          <button
+            className="absolute top-2 right-2 text-red-600"
+            onClick={() => handleRemoveField(index)}
+          >
+            Remove
+          </button>
         </div>
       ))}
 
@@ -158,9 +200,22 @@ const DynamicForm = () => {
             + Add Field
           </button>
 
-          <button onClick={handleSubmit} className="text-green-600">
-            Save Form
-          </button>
+          {fields.length > 0 && (
+            <>
+              <button onClick={handleSubmit} className="text-green-600">
+                Save Form
+              </button>
+              <button
+                className="text-green-600"
+                onClick={() => {
+                  setCategory("");
+                  setFields([]);
+                }}
+              >
+                Cancel
+              </button>
+            </>
+          )}
         </>
       )}
     </div>

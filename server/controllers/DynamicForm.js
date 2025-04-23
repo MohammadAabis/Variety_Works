@@ -1,7 +1,6 @@
 const Form = require("../models/DynamicForm");
 
 const insertForm = async (req, res) => {
-  console.log("req.body", req.body);
 
   try {
     const { category, fields } = req.body;
@@ -33,7 +32,6 @@ const getFormByCategory = async (req, res) => {
     }
 
     const form = await Form.findOne({ category });
-    // console.log("Full Forms JSON:", JSON.stringify(form, null, 2));
 
     if (!form) {
       return res.json({ message: "No form found for this category" });

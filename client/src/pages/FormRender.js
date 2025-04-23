@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { GetFormCategory } from "../API/Users";
+// import { useNavigate } from "react-router-dom";
 
 const DynamicFormRenderer = () => {
   const [categories, setCategories] = useState([
@@ -10,6 +11,13 @@ const DynamicFormRenderer = () => {
   ]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [filteredForm, setFilteredForm] = useState(null);
+
+  const navigate = useNavigate();
+
+  const handleUpdateClick = (filteredForm) => {
+    // navigate("/dynamic-form", { state: { formToEdit: filteredForm } });
+    console.log("Handle update click", filteredForm);
+  };
 
   const handleCategoryClick = async (category) => {
     setSelectedCategory(category);
@@ -108,6 +116,13 @@ const DynamicFormRenderer = () => {
                   return null;
               }
             })}
+            <bbr />
+            <button
+              onClick={() => handleUpdateClick(filteredForm)}
+              className="text-green-600"
+            >
+              Update
+            </button>
           </div>
         </div>
       )}
