@@ -1,7 +1,6 @@
 const Form = require("../models/DynamicForm");
 
 const insertForm = async (req, res) => {
-
   try {
     const { category, fields } = req.body;
     const form = new Form({ category, fields });
@@ -44,6 +43,18 @@ const getFormByCategory = async (req, res) => {
   }
 };
 
+const updateForm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = await Form.findByIdAndUpdate(id, req.body, { new: true });
+    if (!updated) return res.status(404).json({ message: "Form not found" });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 
-module.exports = { insertForm, getAllForms, getFormByCategory };
+
+
+module.exports = { insertForm, getAllForms, getFormByCategory, updateForm };

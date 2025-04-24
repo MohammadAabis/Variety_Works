@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { AddDynamicData } from "../API/Users";
+import { AddDynamicData, GetFormData, UpdateDynamicData } from "../API/Users";
 import { generateFieldName } from "../utils";
-// import { useLocation } from "react-router-dom";
 
-const fieldTypes = ["text", "textarea", "dropdown", "checkbox"];
+const fieldTypes = ["text", "textarea", "dropdown", "checkbox", "date"];
 
 const DynamicForm = () => {
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [allForms, setAllForms] = useState([]);
+  const [currentForm, setCurrentForm] = useState(null);
   const [category, setCategory] = useState("");
-  const [fields, setFields] = useState([]);
 
   const categories = [
     "Personal Information",
@@ -16,38 +17,42 @@ const DynamicForm = () => {
     "Employee Details",
   ];
 
-//   const location = useLocation();
-//   const formToEdit = location.state?.formToEdit;
-
-// useEffect(() => {
-//   if (formToEdit) {
-//     setCategory(formToEdit.category);
-//     setFields(formToEdit.fields);
-//     // setFormId(formToEdit._id); // useRef or state to track this
-//   }
-// }, [formToEdit]);
-
-  const addField = () => {
-    const newField = {
-      id: Date.now(),
-      label: "",
-      name: "",
-      type: "text",
-      required: false,
-      options: [],
+  useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        const resp = await GetFormData();
+        setAllForms(resp.data);
+      } catch (error) {
+        console.error("Error fetching forms:", error);
+      }
     };
-    setFields([...fields, newField]);
+
+    fetchForms();
+  }, []);
+
+  const handleCategoryChange = (e) => {
+    const selected = e.target.value;
+    setSelectedCategory(selected);
+
+    const existingForm = allForms.find((form) => form.category === selected);
+    if (existingForm) {
+      setCurrentForm({ ...existingForm }); // clone to allow editing
+    } else {
+      setCurrentForm({
+        category: selected,
+        fields: [],
+      });
+    }
   };
 
   const handleFieldChange = (fieldIndex, key, value) => {
-    const updated = [...fields];
+    const updated = [...currentForm.fields];
     const field = updated[fieldIndex];
 
     if (key === "label") {
       const newLabel = value;
       const newName = generateFieldName(newLabel);
 
-      // Prevent duplicate labels (case-insensitive)
       const isDuplicate = updated.some(
         (f, idx) =>
           idx !== fieldIndex &&
@@ -65,19 +70,40 @@ const DynamicForm = () => {
       field[key] = value;
     }
 
-    setFields(updated);
+    setCurrentForm((prev) => ({ ...prev, fields: updated }));
+  };
+
+  const addField = () => {
+    const newField = {
+      id: Date.now(),
+      label: "",
+      name: "",
+      type: "text",
+      required: false,
+      options: [],
+    };
+    setCurrentForm((prev) => ({
+      ...prev,
+      fields: [...prev.fields, newField],
+    }));
+  };
+
+  const handleRemoveField = (index) => {
+    const updated = [...currentForm.fields];
+    updated.splice(index, 1);
+    setCurrentForm((prev) => ({ ...prev, fields: updated }));
   };
 
   const handleSubmit = async () => {
+    const { category, fields } = currentForm;
+
     if (fields.length === 0) {
-      alert("Please add at least one field before saving the form.");
+      alert("Please add at least one field.");
       return;
     }
 
-    // Custom validation
     for (let i = 0; i < fields.length; i++) {
       const field = fields[i];
-
       if (!field.label || field.label.trim() === "") {
         alert(`Field ${i + 1} is missing a label.`);
         return;
@@ -91,25 +117,37 @@ const DynamicForm = () => {
       }
     }
 
-    const formData = {
-      category,
-      fields,
-    };
-
     try {
-      await AddDynamicData(formData);
+      console.log("currentForm", currentForm);
+      await AddDynamicData(currentForm);
       alert("Form saved!");
-      setCategory("");
-      setFields([]);
+      setSelectedCategory("");
+      setCurrentForm(null);
     } catch (err) {
       console.error("Failed to save form:", err);
     }
   };
 
-  const handleRemoveField = (index) => {
-    const updatedFields = [...fields];
-    updatedFields.splice(index, 1);
-    setFields(updatedFields);
+  const handleUpdate = async () => {
+    if (!currentForm._id) {
+      alert("No existing form to update.");
+      return;
+    }
+
+    try {
+      const res = await UpdateDynamicData(currentForm._id, {
+        category: currentForm.category,
+        fields: currentForm.fields,
+      });
+
+      alert("Form updated successfully!");
+      setCurrentForm(null);
+      setSelectedCategory("");
+      setCategory("");
+    } catch (err) {
+      console.error("Error updating form:", err);
+      alert("Failed to update form");
+    }
   };
 
   return (
@@ -118,8 +156,8 @@ const DynamicForm = () => {
 
       <select
         className="border p-2 w-full mb-4"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
+        onChange={handleCategoryChange}
+        value={selectedCategory}
       >
         <option value="">Select Category</option>
         {categories.map((cat, idx) => (
@@ -129,10 +167,10 @@ const DynamicForm = () => {
         ))}
       </select>
 
-      {fields.map((field, index) => (
+      {currentForm?.fields.map((field, index) => (
         <div
-          key={field.id}
-          className="border p-3 mb-4 rounded bg-gray-50 shadow"
+          key={index}
+          className="border p-3 mb-4 rounded bg-gray-50 shadow relative"
         >
           <input
             className="border p-1 w-full mb-2"
@@ -140,7 +178,7 @@ const DynamicForm = () => {
             value={field.label}
             onChange={(e) => {
               const val = e.target.value;
-              if (field.label.length === 0 && val.startsWith(" ")) return; // Only prevent leading space
+              if (field.label.length === 0 && val.startsWith(" ")) return;
               handleFieldChange(index, "label", val);
             }}
           />
@@ -158,19 +196,22 @@ const DynamicForm = () => {
           </select>
 
           {["dropdown", "checkbox"].includes(field.type) && (
-            <input
-              className="border p-1 w-full mb-2"
-              placeholder="Comma-separated options (e.g. Option One, Option Two)"
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val.startsWith(" ")) return; // Prevent leading space
-                const optionArray = val
-                  .split(",")
-                  .map((opt) => opt.trim().replace(/\s+/g, "_").toLowerCase())
-                  .filter((opt) => opt.length > 0); // Remove empty entries
-                handleFieldChange(index, "options", optionArray);
-              }}
-            />
+            <>
+              <input
+                className="border p-1 w-full mb-2"
+                placeholder="Comma-separated options (e.g. Option One, Option Two)"
+                value={field.options.join(", ")} // to show existing values
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val.startsWith(" ")) return;
+                  const optionArray = val
+                    .split(",")
+                    .map((opt) => opt.trim().replace(/\s+/g, "_").toLowerCase())
+                    .filter((opt) => opt.length > 0);
+                  handleFieldChange(index, "options", optionArray);
+                }}
+              />
+            </>
           )}
 
           <label className="block">
@@ -184,7 +225,6 @@ const DynamicForm = () => {
             />
             Required
           </label>
-          <br />
           <button
             className="absolute top-2 right-2 text-red-600"
             onClick={() => handleRemoveField(index)}
@@ -194,22 +234,30 @@ const DynamicForm = () => {
         </div>
       ))}
 
-      {category && (
+      {currentForm && (
         <>
           <button onClick={addField} className="text-blue-600 mr-4">
             + Add Field
           </button>
 
-          {fields.length > 0 && (
+          {currentForm.fields.length > 0 && (
             <>
-              <button onClick={handleSubmit} className="text-green-600">
-                Save Form
-              </button>
+              {!currentForm._id ? (
+                <button onClick={handleSubmit} className="text-green-600">
+                  Save Form
+                </button>
+              ) : (
+                <button onClick={handleUpdate} className="text-yellow-600">
+                  Update Form
+                </button>
+              )}
+
               <button
-                className="text-green-600"
+                className="text-gray-600 ml-4"
                 onClick={() => {
                   setCategory("");
-                  setFields([]);
+                  setSelectedCategory("");
+                  setCurrentForm(null);
                 }}
               >
                 Cancel
