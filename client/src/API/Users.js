@@ -33,6 +33,11 @@ const UpdateDynamicData = async (id, data) => {
   return resp;
 };
 
+const SubmitFormResponses = async (data) => {
+  const resp = await client.post("/submit", data);
+  return resp;
+};
+
 export {
   Signup,
   Signin,
@@ -40,4 +45,5 @@ export {
   GetFormData,
   GetFormCategory,
   UpdateDynamicData,
+  SubmitFormResponses,
 };

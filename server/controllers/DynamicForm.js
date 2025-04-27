@@ -1,4 +1,5 @@
 const Form = require("../models/DynamicForm");
+const FormResponse = require("../models/FormResponse"); // Assuming you have a FormResponse model
 
 const insertForm = async (req, res) => {
   try {
@@ -54,7 +55,19 @@ const updateForm = async (req, res) => {
   }
 };
 
+const submitFormResponse = async (req, res) => {
+  console.log("Received form response:", req.body); // Log the received data
+  try {
+    const newResponse = new FormResponse(req.body);
+    await newResponse.save();
+    res.status(201).json({ message: "Form response saved successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
 
 
 
-module.exports = { insertForm, getAllForms, getFormByCategory, updateForm };
+
+module.exports = { insertForm, getAllForms, getFormByCategory, updateForm, submitFormResponse };

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { GetFormCategory } from "../API/Users";
-// import { useNavigate } from "react-router-dom";
+import { GetFormCategory, SubmitFormResponses } from "../API/Users";
 
 const DynamicFormRenderer = () => {
   const [categories, setCategories] = useState([
@@ -11,13 +10,7 @@ const DynamicFormRenderer = () => {
   ]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [filteredForm, setFilteredForm] = useState(null);
-
-  const navigate = useNavigate();
-
-  const handleUpdateClick = (filteredForm) => {
-    // navigate("/dynamic-form", { state: { formToEdit: filteredForm } });
-    console.log("Handle update click", filteredForm);
-  };
+  const [responses, setResponses] = useState({}); // <-- New state to capture user responses
 
   const handleCategoryClick = async (category) => {
     setSelectedCategory(category);
@@ -28,106 +21,379 @@ const DynamicFormRenderer = () => {
         return;
       } else {
         setFilteredForm(res);
+        setResponses({}); // Reset responses
       }
     } catch (error) {
       console.error("Failed to fetch form for category:", error);
     }
   };
 
-  // const handleChange = (fieldId, value) => {
-  //   setResponses((prev) => ({ ...prev, [fieldId]: value }));
-  // };
+  const handleChange = (fieldId, value) => {
+    setResponses((prev) => ({ ...prev, [fieldId]: value }));
+  };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log("User Responses:", responses);
-  //   // Submit responses to another collection or store as per use case
-  // };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // if (!filteredForm) return <p>Loading form...</p>;
+    // Validate required fields
+    const missingFields = filteredForm.fields.filter(
+      (field) => field.required && !responses[field.label]
+    );
+    if (missingFields.length > 0) {
+      alert(
+        `Please fill required fields: ${missingFields
+          .map((f) => f.label)
+          .join(", ")}`
+      );
+      return;
+    }
+
+    // Prepare data to submit
+    const payload = {
+      category: filteredForm.category,
+      responses: responses,
+    };
+
+    try {
+      await SubmitFormResponses(payload);
+      alert("Form submitted successfully!");
+      setResponses({});
+    } catch (error) {
+      console.error("Failed to submit form:", error);
+      alert("Error submitting form!");
+    }
+  };
+
   return (
     <>
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="row mb-4">
         {categories.map((cat, i) => (
-          <button
-            key={i}
-            onClick={() => handleCategoryClick(cat)}
-            className={`px-4 py-2 rounded ${
-              selectedCategory === cat
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200"
-            }`}
-          >
-            {cat}
-          </button>
+          <div key={i} className="col-auto mb-2">
+            <button
+              type="button"
+              onClick={() => handleCategoryClick(cat)}
+              className={`btn ${
+                selectedCategory === cat ? "btn-primary" : "btn-secondary"
+              }`}
+            >
+              {cat}
+            </button>
+          </div>
         ))}
       </div>
 
       {filteredForm && (
-        <div className="p-4">
-          <div className="mb-6 border p-4 rounded">
-            <h2 className="text-xl font-bold mb-2">{filteredForm.category}</h2>
+        <form className="container">
+          <div className="card p-4">
+            <h2 className="h4 mb-4">{filteredForm.category}</h2>
 
-            {filteredForm.fields?.map((field, fieldIndex) => {
-              switch (field.type) {
-                case "text":
-                  return (
-                    <div key={fieldIndex} className="mb-2">
-                      <label className="block mb-1">{field.label}</label>
-                      <input
-                        type="text"
-                        className="border px-2 py-1 rounded w-full"
-                      />
-                    </div>
-                  );
-                case "textarea":
-                  return (
-                    <div key={fieldIndex} className="mb-2">
-                      <label className="block mb-1">{field.label}</label>
-                      <textarea className="border px-2 py-1 rounded w-full" />
-                    </div>
-                  );
-                case "dropdown":
-                  return (
-                    <div key={fieldIndex} className="mb-2">
-                      <label className="block mb-1">{field.label}</label>
-                      <select className="border px-2 py-1 rounded w-full">
-                        {field.options?.map((opt, optIndex) => (
-                          <option key={optIndex} value={opt}>
-                            {opt}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  );
-                case "checkbox":
-                  return (
-                    <div key={fieldIndex} className="mb-2">
-                      <label className="block mb-1">{field.label}</label>
-                      {field.options?.map((opt, optIndex) => (
-                        <label key={optIndex} className="block">
-                          <input type="checkbox" value={opt} className="mr-2" />
-                          {opt}
+            <div className="row">
+              {filteredForm.fields?.map((field, fieldIndex) => {
+                switch (field.type) {
+                  case "text":
+                  case "date":
+                  case "email":
+                    return (
+                      <div key={fieldIndex} className="col-12 mb-3">
+                        <label className="form-label">
+                          {field.label}{" "}
+                          {field.required && (
+                            <span className="text-danger">*</span>
+                          )}
                         </label>
-                      ))}
-                    </div>
-                  );
-                default:
-                  return null;
-              }
-            })}
-            <bbr />
-            <button
-              onClick={() => handleUpdateClick(filteredForm)}
-              className="text-green-600"
-            >
-              Update
-            </button>
+                        <input
+                          type={field.type}
+                          className="form-control"
+                          value={responses[field.label] || ""}
+                          onChange={(e) =>
+                            handleChange(field.label, e.target.value)
+                          }
+                        />
+                      </div>
+                    );
+                  case "textarea":
+                    return (
+                      <div key={fieldIndex} className="col-12 mb-3">
+                        <label className="form-label">
+                          {field.label}{" "}
+                          {field.required && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
+                        <textarea
+                          className="form-control"
+                          rows="3"
+                          value={responses[field.label] || ""}
+                          onChange={(e) =>
+                            handleChange(field.label, e.target.value)
+                          }
+                        ></textarea>
+                      </div>
+                    );
+                  case "dropdown":
+                    return (
+                      <div key={fieldIndex} className="col-12 mb-3">
+                        <label className="form-label">
+                          {field.label}{" "}
+                          {field.required && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
+                        <select
+                          className="form-select"
+                          value={responses[field.label] || ""}
+                          onChange={(e) =>
+                            handleChange(field.label, e.target.value)
+                          }
+                        >
+                          <option value="">Select</option>
+                          {field.options?.map((opt, optIndex) => (
+                            <option key={optIndex} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    );
+                  case "checkbox":
+                    return (
+                      <div key={fieldIndex} className="col-12 mb-3">
+                        <label className="form-label d-block">
+                          {field.label}{" "}
+                          {field.required && (
+                            <span className="text-danger">*</span>
+                          )}
+                        </label>
+                        {field.options?.map((opt, optIndex) => (
+                          <div className="form-check" key={optIndex}>
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              checked={
+                                responses[field.label]?.includes(opt) || false
+                              }
+                              onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                setResponses((prev) => {
+                                  const currentValues = prev[field.label] || [];
+                                  if (isChecked) {
+                                    return {
+                                      ...prev,
+                                      [field.label]: [...currentValues, opt],
+                                    };
+                                  } else {
+                                    return {
+                                      ...prev,
+                                      [field.label]: currentValues.filter(
+                                        (v) => v !== opt
+                                      ),
+                                    };
+                                  }
+                                });
+                              }}
+                              id={`checkbox-${field.label}-${optIndex}`}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor={`checkbox-${field.label}-${optIndex}`}
+                            >
+                              {opt}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  default:
+                    return null;
+                }
+              })}
+            </div>
+
+            <div className="text-end mt-4">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="btn btn-success"
+              >
+                Submit
+              </button>
+            </div>
           </div>
-        </div>
+        </form>
       )}
     </>
   );
 };
 
 export default DynamicFormRenderer;
+
+// import React, { useState } from "react";
+// import { GetFormCategory, SubmitFormResponses } from "../API/Users";
+
+// const DynamicFormRenderer = () => {
+//   const [categories, setCategories] = useState([
+//     "Personal Information",
+//     "Inventory",
+//     "Finance",
+//     "Employee Details",
+//   ]);
+//   const [selectedCategory, setSelectedCategory] = useState(null);
+//   const [filteredForm, setFilteredForm] = useState(null);
+//   const [responses, setResponses] = useState({});
+
+//   const handleCategoryClick = async (category) => {
+//     setSelectedCategory(category);
+//     try {
+//       const res = await GetFormCategory(category);
+//       if (!res) {
+//         alert("No form found for this category");
+//         return;
+//       } else {
+//         setFilteredForm(res);
+//       }
+//     } catch (error) {
+//       console.error("Failed to fetch form for category:", error);
+//     }
+//   };
+
+//   const handleChange = (fieldId, value) => {
+//     setResponses((prev) => ({ ...prev, [fieldId]: value }));
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     // Validate required fields
+//     const missingFields = filteredForm.fields.filter(field =>
+//       field.required && !responses[field.label]
+//     );
+//     if (missingFields.length > 0) {
+//       alert(`Please fill required fields: ${missingFields.map(f => f.label).join(", ")}`);
+//       return;
+//     }
+
+//     // Prepare data to submit
+//     const payload = {
+//       category: filteredForm.category,
+//       responses: responses,
+//     };
+
+//     try {
+//       await SubmitFormResponses(payload);
+//       alert("Form submitted successfully!");
+//       setResponses({});
+//     } catch (error) {
+//       console.error("Failed to submit form:", error);
+//       alert("Error submitting form!");
+//     }
+//   };
+
+//   // if (!filteredForm) return <p>Loading form...</p>;
+//   return (
+//     <>
+//       <div className="flex flex-wrap gap-2 mb-4">
+//         {categories.map((cat, i) => (
+//           <button
+//             key={i}
+//             onClick={() => handleCategoryClick(cat)}
+//             className={`px-4 py-2 rounded ${
+//               selectedCategory === cat
+//                 ? "bg-blue-500 text-white"
+//                 : "bg-gray-200"
+//             }`}
+//           >
+//             {cat}
+//           </button>
+//         ))}
+//       </div>
+
+//       {filteredForm && (
+//         <div className="p-4">
+//           <div className="mb-6 border p-4 rounded">
+//             <h2 className="text-xl font-bold mb-2">{filteredForm.category}</h2>
+
+//             {filteredForm.fields?.map((field, fieldIndex) => {
+//               switch (field.type) {
+//                 case "text":
+//                   return (
+//                     <div key={fieldIndex} className="mb-2">
+//                       <label className="block mb-1">{field.label}</label>
+//                       <input
+//                         type="text"
+//                         className="border px-2 py-1 rounded w-full"
+//                       />
+//                     </div>
+//                   );
+//                 case "textarea":
+//                   return (
+//                     <div key={fieldIndex} className="mb-2">
+//                       <label className="block mb-1">{field.label}</label>
+//                       <textarea className="border px-2 py-1 rounded w-full" />
+//                     </div>
+//                   );
+//                 case "date":
+//                   return (
+//                     <div key={fieldIndex} className="mb-2">
+//                       <label className="block mb-1">{field.label}</label>
+//                       <input
+//                         type="date"
+//                         className="border px-2 py-1 rounded w-full"
+//                       />
+//                     </div>
+//                   );
+
+//                 case "email":
+//                   return (
+//                     <div key={fieldIndex} className="mb-2">
+//                       <label className="block mb-1">{field.label}</label>
+//                       <input
+//                         type="email"
+//                         className="border px-2 py-1 rounded w-full"
+//                       />
+//                     </div>
+//                   );
+
+//                 case "dropdown":
+//                   return (
+//                     <div key={fieldIndex} className="mb-2">
+//                       <label className="block mb-1">{field.label}</label>
+//                       <select className="border px-2 py-1 rounded w-full">
+//                         {field.options?.map((opt, optIndex) => (
+//                           <option key={optIndex} value={opt}>
+//                             {opt}
+//                           </option>
+//                         ))}
+//                       </select>
+//                     </div>
+//                   );
+//                 case "checkbox":
+//                   return (
+//                     <div key={fieldIndex} className="mb-2">
+//                       <label className="block mb-1">{field.label}</label>
+//                       {field.options?.map((opt, optIndex) => (
+//                         <label key={optIndex} className="block">
+//                           <input type="checkbox" value={opt} className="mr-2" />
+//                           {opt}
+//                         </label>
+//                       ))}
+//                     </div>
+//                   );
+//                 default:
+//                   return null;
+//               }
+//             })}
+//             <bbr />
+//             <button
+//               // onClick={() => handleUpdateClick(filteredForm)}
+//               className="text-green-600"
+//             >
+//               Update
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
+// export default DynamicFormRenderer;

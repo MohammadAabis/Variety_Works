@@ -2,13 +2,21 @@ import React, { useState, useEffect } from "react";
 import { AddDynamicData, GetFormData, UpdateDynamicData } from "../API/Users";
 import { generateFieldName } from "../utils";
 
-const fieldTypes = ["text", "textarea", "dropdown", "checkbox", "date"];
+const fieldTypes = [
+  "text",
+  "textarea",
+  "dropdown",
+  "checkbox",
+  "date",
+  "email",
+];
 
 const DynamicForm = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [allForms, setAllForms] = useState([]);
   const [currentForm, setCurrentForm] = useState(null);
   const [category, setCategory] = useState("");
+  const [newOption, setNewOption] = useState("");
 
   const categories = [
     "Personal Information",
@@ -42,6 +50,21 @@ const DynamicForm = () => {
         category: selected,
         fields: [],
       });
+    }
+  };
+
+  const pushPendingOption = () => {
+    if (newOption.trim() !== "") {
+      const updated = [...currentForm.fields];
+      // Find the last edited dropdown/checkbox field
+      const lastDropdownIndex = updated.findIndex((field) =>
+        ["dropdown", "checkbox"].includes(field.type)
+      );
+      if (lastDropdownIndex !== -1) {
+        updated[lastDropdownIndex].options.push(newOption.trim());
+        setCurrentForm((prev) => ({ ...prev, fields: updated }));
+        setNewOption(""); // Clear after pushing
+      }
     }
   };
 
@@ -95,6 +118,8 @@ const DynamicForm = () => {
   };
 
   const handleSubmit = async () => {
+    pushPendingOption();
+
     const { category, fields } = currentForm;
 
     if (fields.length === 0) {
@@ -118,8 +143,8 @@ const DynamicForm = () => {
     }
 
     try {
-      console.log("currentForm", currentForm);
       await AddDynamicData(currentForm);
+      setAllForms((prevForms) => [...prevForms, currentForm]);
       alert("Form saved!");
       setSelectedCategory("");
       setCurrentForm(null);
@@ -129,16 +154,24 @@ const DynamicForm = () => {
   };
 
   const handleUpdate = async () => {
+    pushPendingOption();
+
     if (!currentForm._id) {
       alert("No existing form to update.");
       return;
     }
 
     try {
-      const res = await UpdateDynamicData(currentForm._id, {
+      await UpdateDynamicData(currentForm._id, {
         category: currentForm.category,
         fields: currentForm.fields,
       });
+
+      setAllForms((prevForms) =>
+        prevForms.map((form) =>
+          form._id === currentForm._id ? { ...currentForm } : form
+        )
+      );
 
       alert("Form updated successfully!");
       setCurrentForm(null);
@@ -197,20 +230,66 @@ const DynamicForm = () => {
 
           {["dropdown", "checkbox"].includes(field.type) && (
             <>
-              <input
-                className="border p-1 w-full mb-2"
-                placeholder="Comma-separated options (e.g. Option One, Option Two)"
-                value={field.options.join(", ")} // to show existing values
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (val.startsWith(" ")) return;
-                  const optionArray = val
-                    .split(",")
-                    .map((opt) => opt.trim().replace(/\s+/g, "_").toLowerCase())
-                    .filter((opt) => opt.length > 0);
-                  handleFieldChange(index, "options", optionArray);
-                }}
-              />
+              <div className="flex mb-2">
+                <input
+                  className="border p-1 flex-1"
+                  placeholder="Enter an option"
+                  value={field.newOption || ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    handleFieldChange(index, "newOption", val);
+                  }}
+                />
+                <button
+                  className="ml-2 text-green-600"
+                  type="button"
+                  onClick={() => {
+                    if (!field.newOption || field.newOption.trim() === "")
+                      return;
+
+                    const updatedFields = [...currentForm.fields];
+                    const formattedOption = field.newOption.trim();
+                    // .replace(/\s+/g, "_")
+                    // .toLowerCase();
+
+                    updatedFields[index].options.push(formattedOption);
+                    updatedFields[index].newOption = ""; // Clear input
+
+                    setCurrentForm((prev) => ({
+                      ...prev,
+                      fields: updatedFields,
+                    }));
+                  }}
+                >
+                  Add Option
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-2">
+                {field.options.map((opt, optIdx) => (
+                  <div
+                    key={optIdx}
+                    className="flex items-center bg-gray-200 py-1 ml-3 rounded"
+                  >
+                    {opt}
+                    <button
+                      type="button"
+                      className="ml-5 text-red-600 "
+                      onClick={() => {
+                        const updatedFields = [...currentForm.fields];
+                        updatedFields[index].options.splice(optIdx, 1);
+
+                        setCurrentForm((prev) => ({
+                          ...prev,
+                          fields: updatedFields,
+                        }));
+                      }}
+                    >
+                      x
+                    </button>
+                  </div>
+                ))}
+              </div>
             </>
           )}
 
