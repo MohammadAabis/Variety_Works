@@ -56,7 +56,6 @@ const updateForm = async (req, res) => {
 };
 
 const submitFormResponse = async (req, res) => {
-  console.log("Received form response:", req.body); // Log the received data
   try {
     const newResponse = new FormResponse(req.body);
     await newResponse.save();
@@ -67,7 +66,10 @@ const submitFormResponse = async (req, res) => {
   }
 };
 
-
-
-
-module.exports = { insertForm, getAllForms, getFormByCategory, updateForm, submitFormResponse };
+module.exports = {
+  insertForm,
+  getAllForms,
+  getFormByCategory,
+  updateForm,
+  submitFormResponse,
+};
